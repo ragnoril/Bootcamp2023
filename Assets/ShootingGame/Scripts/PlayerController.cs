@@ -2,13 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SocialPlatforms.Impl;
 
 namespace ShooterGame
 {
     public class PlayerController : MonoBehaviour
     {
         private Rigidbody _rigidBody;
+        private Animator _animator;
 
         [SerializeField]
         private float _moveSpeed;
@@ -26,10 +27,19 @@ namespace ShooterGame
         private float _rateOfFire;
         private float _fireTimer;
 
+        [SerializeField]
+        private float _maxHealth;
+        private float _currentHealth;
+
+        private int _score;
+
         private void Start()
         {
+            _animator = GetComponent<Animator>();
             _rigidBody = GetComponent<Rigidbody>();
             _fireTimer = _rateOfFire;
+            _currentHealth = _maxHealth;
+            _score = 0;
         }
 
         private void Update()
@@ -56,6 +66,7 @@ namespace ShooterGame
         {
             GameObject go = Instantiate(_bulletPrefab, _muzzleTransform.position, _muzzleTransform.rotation);
             _fireTimer = 0f;
+
         }
 
         private void FixedUpdate()
@@ -67,6 +78,28 @@ namespace ShooterGame
             playerVelocity.y = _rigidBody.velocity.y;
 
             _rigidBody.velocity = playerVelocity;
+
+            if (_rigidBody.velocity.sqrMagnitude > 0.1f)
+                _animator.SetBool("IsWalking", true);
+            else
+                _animator.SetBool("IsWalking", false);
+        }
+
+        public void GotHit(float damage)
+        {
+            
+            _currentHealth -= damage;
+            Debug.Log("hit:" + damage + " health: " + _currentHealth);
+            if (_currentHealth <= 0)
+                _animator.SetBool("IsDead", true);
+            else
+                _animator.SetTrigger("GotHit");
+
+        }
+
+        public void EnemyKilled()
+        {
+            _score += 1;
         }
 
     }
