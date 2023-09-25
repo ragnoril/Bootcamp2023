@@ -2,28 +2,38 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BulletController : MonoBehaviour
+namespace ShooterGame
 {
-    [SerializeField] private Rigidbody _rigidBody;
-
-    [SerializeField] private float _speed;
-
-    // Start is called before the first frame update
-    void Start()
+    public class BulletController : MonoBehaviour
     {
-        _rigidBody = GetComponent<Rigidbody>();
-        
-    }
+        [SerializeField] private Rigidbody _rigidBody;
 
-    private void FixedUpdate()
-    {
-        _rigidBody.velocity = transform.forward * _speed * Time.fixedDeltaTime;
-        _rigidBody.angularVelocity = Vector3.zero;
-    }
+        [SerializeField] private float _speed;
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        Destroy(gameObject, 0.1f);
-    }
+        // Start is called before the first frame update
+        void Start()
+        {
+            _rigidBody = GetComponent<Rigidbody>();
+            _rigidBody.velocity = Vector3.zero;
+            _rigidBody.angularVelocity = Vector3.zero;
+        }
 
+        private void FixedUpdate()
+        {
+            _rigidBody.velocity = transform.forward * _speed * Time.fixedDeltaTime;
+            _rigidBody.angularVelocity = Vector3.zero;
+        }
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            if (collision.collider.tag == "Enemy")
+            {
+                GameManager.Instance.EnemyHit(collision.collider.GetComponent<EnemyController>());
+            }
+
+
+            ObjectPool.Instance.BulletPool.Release(this);
+        }
+
+    }
 }

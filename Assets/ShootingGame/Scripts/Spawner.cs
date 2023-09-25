@@ -3,33 +3,42 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Spawner : MonoBehaviour
+namespace ShooterGame
 {
-    [SerializeField]
-    private GameObject _enemyPrefab;
-
-    private float _spawnTimer = 0f;
-    [SerializeField] private float _spawnRate;
-
-
-    private void Update()
+    public class Spawner : MonoBehaviour
     {
-        _spawnTimer += Time.deltaTime;
+        [SerializeField]
+        private GameObject _enemyPrefab;
 
-        if (_spawnTimer > _spawnRate)
+        private void Start()
         {
-            SpawnEnemy();
-            _spawnTimer = 0f;
+            GameManager.Instance.OnWaveStarted += SpawnNewWave;
         }
-    }
 
-    private void SpawnEnemy()
-    {
-        Vector2 displacement = UnityEngine.Random.insideUnitCircle * UnityEngine.Random.Range(3f, 10f);
+        private void OnDestroy()
+        {
+            GameManager.Instance.OnWaveStarted -= SpawnNewWave;
+        }
 
-        Vector3 spawnPosition = new Vector3(transform.position.x + displacement.x, transform.position.y, transform.position.z + displacement.y);
+        private void SpawnNewWave(int waveCount)
+        {
+            for(int i = 0; i < waveCount; i++)
+            {
+                SpawnEnemy();
+            }
+        }
 
-        Instantiate(_enemyPrefab, spawnPosition, Quaternion.identity);
+        private void SpawnEnemy()
+        {
+            Vector2 displacement = UnityEngine.Random.insideUnitCircle * UnityEngine.Random.Range(3f, 10f);
 
+            Vector3 spawnPosition = new Vector3(transform.position.x + displacement.x, transform.position.y, transform.position.z + displacement.y);
+
+            //Instantiate(_enemyPrefab, spawnPosition, Quaternion.identity);
+            EnemyController enemy = ObjectPool.Instance.EnemyPool.Get();
+            enemy.transform.position = spawnPosition;
+            enemy.transform.rotation = Quaternion.identity;
+
+        }
     }
 }
