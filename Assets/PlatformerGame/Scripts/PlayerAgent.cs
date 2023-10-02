@@ -49,5 +49,13 @@ namespace Platformer
                 _animator.SetBool("isWalking", false);
         }
 
+        public void StopAnimations()
+        {
+            _animator.SetBool("isWalking", false);
+            _animator.SetBool("isFalling", false);
+            
+
+        }
+
     }
 }

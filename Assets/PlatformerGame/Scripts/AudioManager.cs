@@ -6,20 +6,9 @@ using UnityEngine.Audio;
 namespace Platformer
 {
     public class AudioManager : MonoBehaviour
-    {
-        public static AudioManager Instance { get; private set; }
-
+    { 
         private void Awake()
         {
-            if (Instance != null && Instance == this)
-            {
-                Destroy(this.gameObject);
-            }
-            else
-            {
-                Instance = this;
-            }
-
             MusicVolume = PlayerPrefs.GetFloat("MusicVolume", 1f);
             SoundVolume = PlayerPrefs.GetFloat("SoundVolume", 1f);
             if (PlayerPrefs.GetInt("MusicMuted", 0) == 0)

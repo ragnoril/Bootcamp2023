@@ -1,12 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Platformer
 {
-    public class PlayerController : MonoBehaviour
+    public class PlayerController : CustomBehaviour
     {
         private PlayerData _data;
+        public PlayerData Data { get { return _data; } }
         private PlayerAgent _agent;
 
         [SerializeField]
@@ -20,6 +22,9 @@ namespace Platformer
 
         [SerializeField]
         private bool _isGrounded;
+
+        [SerializeField]
+        private bool _isPaused;
 
 
         private void Start()
@@ -37,10 +42,40 @@ namespace Platformer
                 _groundCheck = transform.Find("TouchGround");
             }
 
+            _isPaused = false;
+        }
+
+        public override void Init(GameManager gameManager)
+        {
+            base.Init(gameManager);
+
+            _gameManager.OnLevelStarted += StartNewLevel;
+            _gameManager.OnLevelCompleted += LevelFinished;
+        }
+
+        private void OnDestroy()
+        {
+            _gameManager.OnLevelStarted -= StartNewLevel;
+            _gameManager.OnLevelCompleted -= LevelFinished;
+        }
+
+        private void LevelFinished()
+        {
+            _isPaused = true;
+        }
+
+        private void StartNewLevel()
+        {
+            _data.CoinsCollected = 0;
+            transform.position = Vector3.zero;
+            _agent.StopAnimations();
+            _isPaused = false;
         }
 
         private void FixedUpdate()
         {
+            if (_isPaused) return;
+
             int layerMask = LayerMask.GetMask("Floor");
             _isGrounded = Physics2D.OverlapPoint(_groundCheck.position, layerMask);
 
@@ -65,7 +100,11 @@ namespace Platformer
             if (collision.tag == "Coin")
             {
                 _data.CoinsCollected += collision.GetComponent<PickUp>().GetPickUp();
-                AudioManager.Instance.PlaySound(_pickUpClip);
+                _gameManager.Audio.PlaySound(_pickUpClip);
+            }
+            else if (collision.tag == "Finish")
+            {
+                _gameManager.CheckIfLevelEnded();
             }
         }
     }
