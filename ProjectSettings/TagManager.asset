@@ -8,6 +8,8 @@ TagManager:
   - Bullet
   - Ground
   - Coin
+  - Selectable
+  - Matchbox
   layers:
   - Default
   - TransparentFX
