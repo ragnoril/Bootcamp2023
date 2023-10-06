@@ -128,6 +128,7 @@ namespace Match3D
         public void PlaceItemInsideBox(SelectableItem item)
         {
             OnItemEntersBox?.Invoke(item);
+
         }
 
         public void RemoveItemFromBox(SelectableItem item)
