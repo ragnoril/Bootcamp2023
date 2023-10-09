@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 108c8f3828f4b2642a69350354256c4d, type: 3}
+  m_Name: Board_0
+  m_EditorClassIdentifier: 
+  BoardWidth: 6
+  BoardHeight: 6
+  GameBoard: 
+  TileSprites:
+  - {fileID: 1782196449, guid: 87b5132f33a0cdd42a4b4fbd09049cc6, type: 3}
+  - {fileID: 1914035492, guid: 87b5132f33a0cdd42a4b4fbd09049cc6, type: 3}
+  - {fileID: -343223326, guid: 87b5132f33a0cdd42a4b4fbd09049cc6, type: 3}
+  - {fileID: -1653283943, guid: 87b5132f33a0cdd42a4b4fbd09049cc6, type: 3}
+  - {fileID: -2095632928, guid: 87b5132f33a0cdd42a4b4fbd09049cc6, type: 3}
+  TilePrefab: {fileID: 203135981177177802, guid: 2df5700366064284a84254b049f62ed9, type: 3}
+  EmptyPrefab: {fileID: 1133801354591592093, guid: 6b81c902b3d4c754d929c236865946a8, type: 3}

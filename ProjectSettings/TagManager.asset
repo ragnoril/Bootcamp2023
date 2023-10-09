@@ -10,6 +10,7 @@ TagManager:
   - Coin
   - Selectable
   - Matchbox
+  - Tile
   layers:
   - Default
   - TransparentFX
