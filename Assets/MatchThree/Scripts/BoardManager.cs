@@ -10,15 +10,20 @@ namespace MatchThree
     {
         private GameManager _gameManager;
 
-        private int _boardWidth;
-        private int _boardHeight;
+        [SerializeField]
+        public int BoardWidth;
+        [SerializeField]
+        public int BoardHeight;
 
-        private int[] _gameBoard;
+        [SerializeField]
+        public int[] GameBoard;
+        
         /*
         public GameObject TilePrefab;
         public GameObject EmptyTilePrefab;
         public Sprite[] TileSprites;
         */
+        [SerializeField]
         private BoardDataSO _boardData;
 
         private Camera _camera;
@@ -27,6 +32,7 @@ namespace MatchThree
         private Tile _swapTile;
 
         private int _moveCount;
+        private int _popCount;
 
         public event Action<int> OnBoardMove;
 
@@ -42,26 +48,26 @@ namespace MatchThree
 
         private void FillBoardRandomly()
         {
-            for (int j = 0; j < _boardHeight; j++)
+            for (int j = 0; j < BoardHeight; j++)
             {
-                for (int i = 0; i < _boardWidth; i++)
+                for (int i = 0; i < BoardWidth; i++)
                 {
-                    _gameBoard[GetBoardPosition(i, j)] = UnityEngine.Random.Range(0, _boardData.TileSprites.Length);
+                    GameBoard[GetBoardPosition(i, j)] = UnityEngine.Random.Range(0, _boardData.TileSprites.Length);
                 }
             }
         }
 
         private void RenderBoard()
         {
-            for(int j = 0; j < _boardHeight; j++)
+            for(int j = 0; j < BoardHeight; j++)
             {
-                for(int i  = 0; i < _boardWidth; i++)
+                for(int i  = 0; i < BoardWidth; i++)
                 {
                     GameObject emptyTile = Instantiate(_boardData.EmptyPrefab);
                     emptyTile.transform.SetParent(transform);
                     emptyTile.transform.localPosition = new Vector3(i, -j, 0f);
 
-                    int tileId = _gameBoard[GetBoardPosition(i, j)];
+                    int tileId = GameBoard[GetBoardPosition(i, j)];
                     CreateTile(tileId, i, j);
                 }
             }
@@ -80,16 +86,22 @@ namespace MatchThree
 
         private int GetBoardPosition(int x, int y)
         {
-            return (_boardWidth * y) + x;
+            return (BoardWidth * y) + x;
         }
+
+
 
         public void InitBoard()
         {
             _moveCount = 0;
-            _boardWidth = _boardData.BoardWidth;
-            _boardHeight = _boardData.BoardHeight;
+            _popCount = 0;
+            if (_boardData != null)
+            {
+                BoardWidth = _boardData.BoardWidth;
+                BoardHeight = _boardData.BoardHeight;
+            }
 
-            _gameBoard = new int[_boardWidth * _boardHeight];
+            GameBoard = new int[BoardWidth * BoardHeight];
 
             FillBoardRandomly();
 
@@ -122,8 +134,8 @@ namespace MatchThree
                 int selectedPosition = GetBoardPosition(selectedX, selectedY);
                 int swapPosition = GetBoardPosition(swapX, swapY);
 
-                _gameBoard[selectedPosition] = _swapTile.TileType;
-                _gameBoard[swapPosition] = _selectedTile.TileType;
+                GameBoard[selectedPosition] = _swapTile.TileType;
+                GameBoard[swapPosition] = _selectedTile.TileType;
 
                 Vector3 tempPos = _swapTile.transform.position;
                 _swapTile.transform.position = _selectedTile.transform.position;
@@ -133,10 +145,58 @@ namespace MatchThree
                 OnBoardMove?.Invoke(_moveCount);
 
                 CheckForCombos();
+                StartCoroutine(HandleEmptySpaces());
             }
 
             _selectedTile = null;
             _swapTile = null;
+        }
+
+        IEnumerator HandleEmptySpaces()
+        {
+            yield return new WaitForSeconds(0.5f);
+            CheckForEmptySpaces();
+            yield return new WaitForSeconds(0.5f);
+            FillEmptySpaces();
+        }
+
+        private void FillEmptySpaces()
+        {
+            for(int i= 0; i < BoardWidth; i++)
+            {
+                for(int j = 0; j < BoardHeight; j++)
+                {
+                    int pos = GetBoardPosition(i, j);
+                    if (GameBoard[pos] < 0)
+                    {
+                        GameBoard[pos] = UnityEngine.Random.Range(0, _boardData.TileSprites.Length);
+                        CreateTile(GameBoard[pos], i, j);
+                    }
+                }
+            }
+        }
+
+        private void CheckForEmptySpaces()
+        {
+            for(int i = 0; i < BoardWidth; i++)
+            {
+                for(int j = (BoardHeight -2); j > -1; j--)
+                {
+                    if (GameBoard[GetBoardPosition(i, j)] < 0) continue;
+
+                    Tile tile = GetTile(i, j);
+                    int y = j + 1;
+
+                    while (y < BoardHeight && GameBoard[GetBoardPosition(i,y)] < 0) 
+                    {
+                        tile.transform.localPosition = new Vector3(i, -y, 0f);
+                        GameBoard[GetBoardPosition(i, y - 1)] = -1;
+                        GameBoard[GetBoardPosition(i, y)] = tile.TileType;
+
+                        y += 1;
+                    }
+                }
+            }
         }
 
         private void HandleMobileInput()
@@ -184,7 +244,159 @@ namespace MatchThree
 
         private void CheckForCombos()
         {
-            
+            _popCount += CheckCombosForTile(_selectedTile);
+            _popCount += CheckCombosForTile(_swapTile);
+        }
+
+        private int CheckCombosForTile(Tile comboTile)
+        {
+            int popCount = 0;
+            int comboX = comboTile.GetX();
+            int comboY = comboTile.GetY();
+
+            List<Tile> comboH = CheckCombosHorizontal(comboX, comboY, comboTile.TileType);
+            List<Tile> comboV = CheckCombosVertical(comboX, comboY, comboTile.TileType);
+
+            bool isComboTilePops = false;
+            if (comboH.Count > 1)
+            {
+                foreach (Tile tile in comboH)
+                {
+                    popCount += 1;
+                    PopTile(tile);
+                }
+
+                isComboTilePops = true;
+            }
+
+            if (comboV.Count > 1)
+            {
+                foreach(Tile tile in comboV)
+                {
+                    popCount += 1;
+                    PopTile(tile);
+                }
+
+                isComboTilePops = true;
+            }
+
+            if (isComboTilePops)
+            {
+                popCount += 1;
+                PopTile(comboTile);
+            }
+
+            return popCount;
+        }
+
+        private void PopTile(Tile tile)
+        {
+            GameBoard[GetBoardPosition(tile.GetX(), tile.GetY())] = -1;
+
+            GameObject explosion = Instantiate(_boardData.ExplosionPrefab);
+            explosion.transform.position = tile.transform.position;
+
+            Destroy(explosion.gameObject, 0.5f);
+            Destroy(tile.gameObject);
+        }
+
+        private List<Tile> CheckCombosHorizontal(int x, int y, int tileType)
+        {
+            List<Tile> comboList = new List<Tile>();
+
+            int preX = x - 1;
+            int postX = x + 1;
+
+            while(preX > -1 || postX < BoardWidth)
+            {
+                if (preX > -1)
+                {
+                    int prePos = GetBoardPosition(preX, y);
+                    if (GameBoard[prePos] == tileType)
+                    {
+                        Tile tile = GetTile(preX, y);
+                        if (tile != null)
+                        {
+                            comboList.Add(tile);
+                            preX -= 1;
+                        }
+                    }
+                    else
+                    {
+                        preX = -1;
+                    }
+                }
+
+                if (postX < BoardWidth)
+                {
+                    int postPos = GetBoardPosition(postX, y);
+                    if (GameBoard[postPos] == tileType)
+                    {
+                        Tile tile = GetTile(postX, y);
+                        if (tile != null)
+                        {
+                            comboList.Add(tile);
+                            postX += 1;
+                        }
+                    }
+                    else
+                    {
+                        postX = BoardWidth;
+                    }
+                }
+            }
+
+            return comboList;
+        }
+
+        private List<Tile> CheckCombosVertical(int x, int y, int tileType)
+        {
+            List<Tile> comboList = new List<Tile>();
+
+            int preY = y - 1;
+            int postY = y + 1;
+
+            while (preY > -1 || postY < BoardHeight)
+            {
+                if (preY > -1)
+                {
+                    int prePos = GetBoardPosition(x, preY);
+                    if (GameBoard[prePos] == tileType)
+                    {
+                        Tile tile = GetTile(x, preY);
+                        if (tile != null)
+                        {
+                            comboList.Add(tile);
+                            preY -= 1;
+                        }
+                    }
+                    else
+                    {
+                        preY = -1;
+                    }
+                }
+
+                if (postY < BoardHeight)
+                {
+                    int postPos = GetBoardPosition(x, postY);
+
+                    if (GameBoard[postPos] == tileType)
+                    {
+                        Tile tile = GetTile(x, postY);
+                        if (tile!= null)
+                        {
+                            comboList.Add(tile);
+                            postY += 1;
+                        }
+                    }
+                    else
+                    {
+                        postY = BoardHeight;
+                    }
+                }
+            }
+
+            return comboList;
         }
 
         private Tile GetTile(int x, int y)

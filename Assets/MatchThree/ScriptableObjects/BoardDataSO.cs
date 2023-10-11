@@ -17,5 +17,6 @@ namespace MatchThree
 
         public GameObject TilePrefab;
         public GameObject EmptyPrefab;
+        public GameObject ExplosionPrefab;
     }
 }
