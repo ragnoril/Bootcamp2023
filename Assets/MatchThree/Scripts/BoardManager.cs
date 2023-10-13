@@ -1,3 +1,4 @@
+using Mono.Cecil;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -35,6 +36,7 @@ namespace MatchThree
         private int _popCount;
 
         public event Action<int> OnBoardMove;
+        public event Action<int> OnPop;
 
         public void Init(GameManager gm, BoardDataSO boardData)
         {
@@ -63,7 +65,7 @@ namespace MatchThree
             {
                 for(int i  = 0; i < BoardWidth; i++)
                 {
-                    GameObject emptyTile = Instantiate(_boardData.EmptyPrefab);
+                    GameObject emptyTile = Instantiate(Resources.Load<GameObject>(_boardData.EmptyPrefab));
                     emptyTile.transform.SetParent(transform);
                     emptyTile.transform.localPosition = new Vector3(i, -j, 0f);
 
@@ -75,7 +77,7 @@ namespace MatchThree
 
         private void CreateTile(int tileId, int x, int y)
         {
-            GameObject tileObject = Instantiate(_boardData.TilePrefab);
+            GameObject tileObject = Instantiate(Resources.Load<GameObject>(_boardData.TilePrefab));
             tileObject.transform.SetParent(transform);
             tileObject.transform.localPosition = new Vector3(x, -y, 0f);
 
@@ -291,9 +293,10 @@ namespace MatchThree
 
         private void PopTile(Tile tile)
         {
+            OnPop?.Invoke(_popCount);
             GameBoard[GetBoardPosition(tile.GetX(), tile.GetY())] = -1;
 
-            GameObject explosion = Instantiate(_boardData.ExplosionPrefab);
+            GameObject explosion = Instantiate(Resources.Load<GameObject>(_boardData.ExplosionPrefab));
             explosion.transform.position = tile.transform.position;
 
             Destroy(explosion.gameObject, 0.5f);

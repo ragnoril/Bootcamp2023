@@ -21,6 +21,6 @@ MonoBehaviour:
   - {fileID: -142310065, guid: 87b5132f33a0cdd42a4b4fbd09049cc6, type: 3}
   - {fileID: 103933022, guid: 87b5132f33a0cdd42a4b4fbd09049cc6, type: 3}
   - {fileID: -573226281, guid: 87b5132f33a0cdd42a4b4fbd09049cc6, type: 3}
-  TilePrefab: {fileID: 203135981177177802, guid: 2df5700366064284a84254b049f62ed9, type: 3}
-  EmptyPrefab: {fileID: 1133801354591592093, guid: 709b8d93bca3d094c882931123b971a0, type: 3}
-  ExplosionPrefab: {fileID: 8840046475609265444, guid: 27beb33b48fbed648ad503ce64ab4aea, type: 3}
+  TilePrefab: TilePrefab
+  EmptyPrefab: EmptyTile
+  ExplosionPrefab: Explosion

@@ -155,7 +155,8 @@ MonoBehaviour:
   Boards:
   - {fileID: 11400000, guid: fff78091c2eff904e8ce02c01b0fe843, type: 2}
   - {fileID: 11400000, guid: 982c30d9019b654479872711267836e4, type: 2}
-  LevelIndex: 0
+  - {fileID: 11400000, guid: 38b62c732f41df64e989a74603bf47c7, type: 2}
+  LevelIndex: 2
   Board: {fileID: 1032907142}
 --- !u!4 &869845869
 Transform:
@@ -201,8 +202,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8788a3d1df042f94f9ab2c46ec666c5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _selectedTile: {fileID: 0}
-  _swapTile: {fileID: 0}
+  BoardWidth: 6
+  BoardHeight: 6
+  GameBoard: 000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+  _boardData: {fileID: 0}
 --- !u!4 &1032907143
 Transform:
   m_ObjectHideFlags: 0
@@ -229,6 +232,7 @@ GameObject:
   - component: {fileID: 1690414508}
   - component: {fileID: 1690414507}
   - component: {fileID: 1690414506}
+  - component: {fileID: 1690414509}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -302,3 +306,23 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1690414509
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1690414505}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a160d838ff8b4b4693ac20007e008c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AssetsPPU: 10
+  m_RefResolutionX: 108
+  m_RefResolutionY: 192
+  m_UpscaleRT: 0
+  m_PixelSnapping: 0
+  m_CropFrameX: 0
+  m_CropFrameY: 0
+  m_StretchFill: 0

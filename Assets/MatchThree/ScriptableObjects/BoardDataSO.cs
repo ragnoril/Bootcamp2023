@@ -15,8 +15,8 @@ namespace MatchThree
 
         public Sprite[] TileSprites;
 
-        public GameObject TilePrefab;
-        public GameObject EmptyPrefab;
-        public GameObject ExplosionPrefab;
+        public string TilePrefab;
+        public string EmptyPrefab;
+        public string ExplosionPrefab;
     }
 }
