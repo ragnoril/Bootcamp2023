@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Default Local Group
+  m_EditorClassIdentifier: 
+  m_GroupName: Default Local Group
+  m_Data:
+    m_SerializedData: []
+  m_GUID: f4eddb46c4749694ba2c8cba0de4ae2b
+  m_SerializeEntries:
+  - m_GUID: d3aea5417c104b943929cf9381e78ec2
+    m_Address: Assets/TerrainExample/TerrainsPack.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Test
+  - m_GUID: b56812fbf295f5145a028601c4ddbee1
+    m_Address: Assets/ShootingGame/Prefabs/Player.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Test
+  - m_GUID: 9a0d1412d754e0140920a948941f7b1a
+    m_Address: Assets/PlatformerGame/Audio/impactGlass_heavy_000.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: ff4957ac499c19749a6df531449fa7ec, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: bcfefae7147a7df4e952dd80d5cc2e12, type: 2}
+    - {fileID: 11400000, guid: 55a4d3bceb339504f90f73d76f2fc26e, type: 2}

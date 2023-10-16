@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Platformer
 {
@@ -27,10 +28,18 @@ namespace Platformer
         private bool _isPaused;
 
 
+        private NewControls _controller;
+
+        private float _playerMoveDirection;
+
+
+
         private void Start()
         {
             _data = GetComponent<PlayerData>();
             _agent = GetComponent<PlayerAgent>();
+            
+            HandleControls();
 
             if (_rigidBody == null)
             {
@@ -43,6 +52,41 @@ namespace Platformer
             }
 
             _isPaused = false;
+        }
+
+        private void HandleControls()
+        {
+            _controller = new NewControls();
+            _controller.Enable();
+            _controller.PlayerControls.Move.performed += MovePlayerInput;
+            _controller.PlayerControls.Move.canceled += ClearMoveInput;
+            _controller.PlayerControls.Jump.performed += JumpPlayerInput;
+        }
+
+        private void ClearMoveInput(InputAction.CallbackContext obj)
+        {
+            _playerMoveDirection = 0f;
+        }
+
+        private void JumpPlayerInput(InputAction.CallbackContext input)
+        {
+            Jump();
+        }
+
+        private void Jump()
+        {
+            Debug.Log("Jump");
+            if (_isGrounded)
+            {
+                _rigidBody.AddForce(Vector2.up * _data.JumpSpeed * Time.fixedDeltaTime, ForceMode2D.Impulse);
+                _isGrounded = false;
+                _agent.Jump();
+            }
+        }
+
+        private void MovePlayerInput(InputAction.CallbackContext input)
+        {
+            _playerMoveDirection = input.ReadValue<float>();
         }
 
         public override void Init(GameManager gameManager)
@@ -66,8 +110,12 @@ namespace Platformer
 
         private void StartNewLevel()
         {
+            if (_data == null)
+                _data = GetComponent<PlayerData>();
             _data.CoinsCollected = 0;
             transform.position = Vector3.zero;
+            if (_agent == null)
+                _agent = GetComponent<PlayerAgent>();
             _agent.StopAnimations();
             _isPaused = false;
         }
@@ -79,16 +127,9 @@ namespace Platformer
             int layerMask = LayerMask.GetMask("Floor");
             _isGrounded = Physics2D.OverlapPoint(_groundCheck.position, layerMask);
 
-            float moveX = Input.GetAxis("Horizontal");
+            //float moveX = Input.GetAxis("Horizontal");
 
-            if (_isGrounded && (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W)))
-            {
-                _rigidBody.AddForce(Vector2.up * _data.JumpSpeed * Time.fixedDeltaTime, ForceMode2D.Impulse);
-                _isGrounded = false;
-                _agent.Jump();
-            }
-
-            Vector2 newVelocity = new Vector2(moveX * _data.MoveSpeed * Time.fixedDeltaTime, _rigidBody.velocity.y);
+            Vector2 newVelocity = new Vector2(_playerMoveDirection * _data.MoveSpeed * Time.fixedDeltaTime, _rigidBody.velocity.y);
             _rigidBody.velocity = newVelocity;
 
             _agent.Move(_rigidBody.velocity);
